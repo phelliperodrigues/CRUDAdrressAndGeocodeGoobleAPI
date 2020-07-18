@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -21,6 +22,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -61,21 +63,21 @@ public class AddressControllerTest {
 
     private Address createValidAddress() {
         return new Address()
-                .from().streetName("Praça Almirante Pena Boto")
+                .from().streetName("Praca Almirante Pena Boto")
                 .with().number("50")
                 .and().complement("Apt 34 Bl 14")
                 .in().neighbourhood("Jardim Satelite")
-                .in().city("São Paulo")
-                .in().state("São Paulo")
+                .in().city("Sao Paulo")
+                .in().state("Sao Paulo")
                 .in().country("Brasil")
                 .with().zipcode("04816100");
     }
     private Address createInvalidAddress() {
         return new Address()
-                .from().streetName("Praça Almirante Pena Boto")
+                .from().streetName("Praca Almirante Pena Boto")
                 .and().complement("Apt 34 Bl 14")
                 .in().neighbourhood("Jardim Satelite")
-                .in().state("São Paulo")
+                .in().state("Sao Paulo")
                 .in().country("Brasil")
                 .with().zipcode("04816100");
     }
@@ -171,19 +173,21 @@ public class AddressControllerTest {
     @Test
     @DisplayName("[C] Testing the create incomplete address and valid longitude and latitude")
     public void when_post_request_to_address_and_invalid_address_then_validation_longitude_and_latitude() throws Throwable {
-       String  response = mvc.perform(post(uri)
-                .content(objectMapper.writeValueAsString(createValidAddress()))
+        repository.deleteAll();
+
+        mvc.perform(post(uri)
+                .content(new Gson().toJson(createValidAddress()))
                 .contentType(APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
-        List<Address> addresses = objectMapper.readValue(response, new TypeReference<List<Address>>() {});
 
-        assertThat(addresses).hasSize(1)
-                .extracting(Address::getLatitude, Address::getLongitude)
-                .contains(tuple("-23.7042771", "-46.6868483"));
+        Address addressResponse = repository.findAll().stream().findFirst().orElse(null);
+
+        assertThat(addressResponse).extracting(Address::getLatitude).isEqualTo("-23.7042771");
+        assertThat(addressResponse).extracting(Address::getLongitude).isEqualTo("-46.6868483");
     }
 
 }

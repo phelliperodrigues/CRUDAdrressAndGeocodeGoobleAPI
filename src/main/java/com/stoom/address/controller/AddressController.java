@@ -2,7 +2,7 @@ package com.stoom.address.controller;
 
 import com.stoom.address.model.Address;
 import com.stoom.address.repository.AddressRepository;
-import javassist.Translator;
+import com.stoom.address.util.service.GeoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,7 +12,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +27,9 @@ public class AddressController {
     @Autowired
     private AddressRepository repository;
 
+    @Autowired
+    private GeoService geoService;
+
     @GetMapping
     public ResponseEntity<List<Address>> findAll(){
         return ResponseEntity.ok(repository.findAll());
@@ -40,9 +42,15 @@ public class AddressController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping
     public ResponseEntity<Address> save(@Valid @RequestBody Address address) {
-        return ResponseEntity.ok(repository.save(address));
+
+        return ResponseEntity.ok(repository.save(checkIfHaveLatAndLog(address)));
+    }
+
+    private Address checkIfHaveLatAndLog(Address address) {
+        return address.getLatitude() == null || address.getLongitude() == null ?
+                geoService.getLocalization(address):address;
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

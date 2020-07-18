@@ -44,10 +44,8 @@ public class Address  implements Serializable {
     @NotBlank(message = "zipcode is mandatory")
     private String zipcode;
 
-    @NotBlank(message = "latitude not found")
     private String latitude;
 
-    @NotBlank(message = "longitude not found")
     private String longitude;
 
     public Address from() { return this;}
@@ -91,11 +89,22 @@ public class Address  implements Serializable {
         return this;
     }
 
+    public Address latitude(String latitude) {
+        this.latitude = latitude;
+        return this;
+    }
+    public Address longitude(String longitude) {
+        this.longitude = longitude;
+        return this;
+    }
     public Address zipcode(String zipcode) {
         this.zipcode = zipcode;
         return this;
     }
 
+    public boolean haveGeoLocalization() {
+        return this.latitude == null || this.longitude == null;
+    }
 
     @Override
     public String toString() {
@@ -111,4 +120,6 @@ public class Address  implements Serializable {
                 ", zipcode='" + zipcode + '\'' +
                 '}';
     }
+
+
 }
