@@ -2,6 +2,7 @@ package com.stoom.address.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.stoom.address.model.Address;
 import com.stoom.address.repository.AddressRepository;
 import org.hamcrest.core.Is;
@@ -157,7 +158,6 @@ public class AddressControllerTest {
     @Test
     @DisplayName("[C] Testing the create invalid address")
     public void when_post_request_to_address_and_invalid_address_then_correct_response() throws Throwable {
-        System.out.println(objectMapper.writeValueAsString(createInvalidAddress()));
         mvc.perform(post(uri)
                 .content(objectMapper.writeValueAsString(createInvalidAddress()))
                 .contentType(APPLICATION_JSON_UTF8))
