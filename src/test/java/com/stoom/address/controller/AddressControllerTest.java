@@ -46,11 +46,9 @@ public class AddressControllerTest {
     public void should_return_ok_status_when_find_all_address() throws Throwable {
         this.mvc.perform(
                 MockMvcRequestBuilders.get("/address")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .accept(APPLICATION_JSON_UTF8)
         )
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn();
-
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
 }
