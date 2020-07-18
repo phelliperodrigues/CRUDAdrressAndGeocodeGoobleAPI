@@ -21,6 +21,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -45,7 +46,7 @@ public class AddressControllerTest {
     public static final MediaType APPLICATION_JSON_UTF8 = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(), StandardCharsets.UTF_8);
 
-    private String uri = "/address";
+    private String uri = "/address/";
 
     private Address createValidAddress(){
         return new Address();
@@ -81,13 +82,54 @@ public class AddressControllerTest {
                         .contentType(APPLICATION_JSON_UTF8)
                         .accept(APPLICATION_JSON_UTF8)
         )
-        .andReturn()
-        .getResponse()
-        .getContentAsString();
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
         List<Address> addresses = objectMapper.readValue(responseBody, new TypeReference<List<Address>>() {});
 
-        assertThat(addresses).hasSize(1);
+        assertThat(addresses).isNotEmpty();
+    }
+
+    @Test
+    @DisplayName("[R] - Testing return from find by Id")
+    public void should_return_a_address_from_find_by_id() throws Throwable {
+        Address address = createValidAddress();
+        repository.save(address);
+
+        String responseBody = this.mvc.perform(
+                get(uri + address.getId())
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .accept(APPLICATION_JSON_UTF8)
+        )
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        Address addressReturn = objectMapper.readValue(responseBody, Address.class);
+
+        assertThat(addressReturn).extracting(Address::getId).isEqualTo(address.getId()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("[R] Testing return from find by Id Invalid")
+    public void should_return_a_address_from_find_by_id_invalid() throws Throwable {
+
+        String responseBody = this.mvc.perform(
+                get(uri +  UUID.randomUUID().toString())
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .accept(APPLICATION_JSON_UTF8)
+        )
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        Address addressReturn = objectMapper.readValue(responseBody, Address.class);
+
+        assertThat(addressReturn).extracting(Address::getId).isNull();
     }
 
 }
