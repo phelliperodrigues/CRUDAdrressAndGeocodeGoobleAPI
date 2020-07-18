@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stoom.address.model.Address;
 import com.stoom.address.repository.AddressRepository;
+import org.hamcrest.core.Is;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,11 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+
 
 
 @ExtendWith(SpringExtension.class)
@@ -46,17 +51,32 @@ public class AddressControllerTest {
 
     private String uri = "/address/";
 
-    private Address createValidAddress(){
-        return new Address();
-    }
-
     @BeforeEach()
     public void setUp() {
         repository.deleteAll();
         mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
-
+    private Address createValidAddress() {
+        return new Address()
+                .from().streetName("Praça Almirante Pena Boto")
+                .with().number("50")
+                .and().complement("Apt 34 Bl 14")
+                .in().neighbourhood("Jardim Satelite")
+                .in().city("São Paulo")
+                .in().state("São Paulo")
+                .in().country("Brasil")
+                .with().zipcode("04816100");
+    }
+    private Address createInvalidAddress() {
+        return new Address()
+                .from().streetName("Praça Almirante Pena Boto")
+                .and().complement("Apt 34 Bl 14")
+                .in().neighbourhood("Jardim Satelite")
+                .in().state("São Paulo")
+                .in().country("Brasil")
+                .with().zipcode("04816100");
+    }
 
     @Test
     @DisplayName("[R] - Testing whether a route exists to fetch all addresses")
@@ -123,4 +143,17 @@ public class AddressControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    @DisplayName("[C] Testing the create valid address")
+    public void when_post_request_to_address_and_valid_addres_then_correct_response() throws Throwable {
+
+        mvc.perform(post(uri)
+                .content(objectMapper.writeValueAsString(createValidAddress()))
+                .contentType(APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON_UTF8));
+    }
+
 }
+
+
