@@ -145,14 +145,28 @@ public class AddressControllerTest {
 
     @Test
     @DisplayName("[C] Testing the create valid address")
-    public void when_post_request_to_address_and_valid_addres_then_correct_response() throws Throwable {
+    public void when_post_request_to_address_and_valid_address_then_correct_response() throws Throwable {
 
         mvc.perform(post(uri)
                 .content(objectMapper.writeValueAsString(createValidAddress()))
                 .contentType(APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON_UTF8));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
+
+    @Test
+    @DisplayName("[C] Testing the create invalid address")
+    public void when_post_request_to_address_and_invalid_address_then_correct_response() throws Throwable {
+        System.out.println(objectMapper.writeValueAsString(createInvalidAddress()));
+        mvc.perform(post(uri)
+                .content(objectMapper.writeValueAsString(createInvalidAddress()))
+                .contentType(APPLICATION_JSON_UTF8))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.number", Is.is("number is mandatory")))
+                .andExpect(content()
+                        .contentType(MediaType.APPLICATION_JSON));
+    }
+
 
 }
 
