@@ -1,6 +1,9 @@
 package com.stoom.address.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stoom.address.model.Address;
+import com.stoom.address.repository.AddressRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,8 +19,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -31,24 +39,55 @@ public class AddressControllerTest {
     private MockMvc mvc;
     @Autowired
     private WebApplicationContext webApplicationContext;
-
-    @BeforeEach()
-    public void setUp() {
-        mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-    }
+    @Autowired
+    private AddressRepository repository;
 
     public static final MediaType APPLICATION_JSON_UTF8 = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(), StandardCharsets.UTF_8);
+
+    private String uri = "/address";
+
+    private Address createValidAddress(){
+        return new Address();
+    }
+
+    @BeforeEach()
+    public void setUp() {
+        repository.deleteAll();
+        mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+    }
+
 
 
     @Test
     @DisplayName("[R] - Testing whether a route exists to fetch all addresses")
     public void should_return_ok_status_when_find_all_address() throws Throwable {
         this.mvc.perform(
-                MockMvcRequestBuilders.get("/address")
+                get(uri)
                         .contentType(APPLICATION_JSON_UTF8)
                         .accept(APPLICATION_JSON_UTF8)
         )
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(status().isOk());
     }
+
+    @Test
+    @DisplayName("[R] - Testing return of the GET resource, validating whether a record exists")
+    public void should_return_a_list_with_an_address() throws Throwable {
+
+        repository.save(createValidAddress());
+
+        String responseBody = this.mvc.perform(
+                get(uri)
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .accept(APPLICATION_JSON_UTF8)
+        )
+        .andReturn()
+        .getResponse()
+        .getContentAsString();
+
+        List<Address> addresses = objectMapper.readValue(responseBody, new TypeReference<List<Address>>() {});
+
+        assertThat(addresses).hasSize(1);
+    }
+
 }
