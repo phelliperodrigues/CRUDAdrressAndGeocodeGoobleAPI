@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -167,6 +168,23 @@ public class AddressControllerTest {
                         .contentType(MediaType.APPLICATION_JSON));
     }
 
+    @Test
+    @DisplayName("[C] Testing the create incomplete address and valid longitude and latitude")
+    public void when_post_request_to_address_and_invalid_address_then_validation_longitude_and_latitude() throws Throwable {
+       String  response = mvc.perform(post(uri)
+                .content(objectMapper.writeValueAsString(createValidAddress()))
+                .contentType(APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        List<Address> addresses = objectMapper.readValue(response, new TypeReference<List<Address>>() {});
+
+        assertThat(addresses).hasSize(1)
+                .extracting(Address::getLatitude, Address::getLongitude)
+                .contains(tuple("-23.7042771", "-46.6868483"));
+    }
 
 }
 

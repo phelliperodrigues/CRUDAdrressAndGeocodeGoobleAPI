@@ -44,8 +44,11 @@ public class Address  implements Serializable {
     @NotBlank(message = "zipcode is mandatory")
     private String zipcode;
 
+    @NotBlank(message = "latitude not found")
+    private String latitude;
 
-
+    @NotBlank(message = "longitude not found")
+    private String longitude;
 
     public Address from() { return this;}
     public Address in() { return this;}
