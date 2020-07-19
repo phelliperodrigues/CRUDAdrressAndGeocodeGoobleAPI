@@ -1,0 +1,172 @@
+{
+	"info": {
+		"_postman_id": "5680b0dc-5842-4638-b193-1380cf91457b",
+		"name": "Address",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "findAll",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/address",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"address"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "findByID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/address?id=63405639-9fd9-4fa6-8704-50f4685a6831",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"address"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "63405639-9fd9-4fa6-8704-50f4685a6831"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"streetName\":\"Praca Almirante Pena Boto\",\n    \"number\":\"50\",\n    \"complement\":\"Apt 34 Bl 14\",\n    \"neighbourhood\":\"Jardim Satelite\",\n    \"city\":\"Sao Paulo\",\n    \"state\":\"Sao Paulo\",\n    \"country\":\"Brasil\",\n    \"zipcode\":\"04816100\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/address",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"address"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create {EXCEPTION}",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"streetName\":\"Praca Almirante Pena Boto\",\n    \"number\":\"50\",\n    \"complement\":\"Apt 34 Bl 14\",\n    \"neighbourhood\":\"Jardim Satelite\",\n    \"state\":\"Sao Paulo\",\n    \"country\":\"Brasil\",\n    \"zipcode\":\"04816100\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/address",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"address"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"streetName\":\"Praca Almirante Pena Boto\",\n    \"number\":\"100\",\n    \"complement\":\"Apt 34 Bl 14\",\n    \"neighbourhood\":\"Jardim Satelite\",\n    \"city\":\"Sao Paulo\",\n    \"state\":\"Sao Paulo\",\n    \"country\":\"Brasil\",\n    \"zipcode\":\"04816100\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/address?id=",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"address"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"streetName\":\"Praca Almirante Pena Boto\",\n    \"number\":\"100\",\n    \"complement\":\"Apt 34 Bl 14\",\n    \"neighbourhood\":\"Jardim Satelite\",\n    \"city\":\"Sao Paulo\",\n    \"state\":\"Sao Paulo\",\n    \"country\":\"Brasil\",\n    \"zipcode\":\"04816100\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/address?id=",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"address"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
