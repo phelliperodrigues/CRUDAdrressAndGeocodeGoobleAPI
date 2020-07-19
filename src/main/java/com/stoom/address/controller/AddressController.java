@@ -67,4 +67,10 @@ public class AddressController {
         });
         return errors;
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> destroy(@PathVariable("id") String uuid){
+        repository.deleteById(UUID.fromString(uuid));
+        return ResponseEntity.noContent().build();
+    }
 }
