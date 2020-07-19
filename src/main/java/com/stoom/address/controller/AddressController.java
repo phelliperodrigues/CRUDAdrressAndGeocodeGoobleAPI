@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import static java.util.stream.Collectors.*;
 
 @RestController
 @RequestMapping("/address")
@@ -36,19 +37,20 @@ public class AddressController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Address> getAddressById(@PathVariable("id") String uuid) {
+    public ResponseEntity<Address> findById(@PathVariable("id") String uuid) {
         return repository.findById(UUID.fromString(uuid))
                 .map(record -> ResponseEntity.ok().body(record))
                 .orElse(ResponseEntity.notFound().build());
     }
 
+
     @PostMapping
     public ResponseEntity<Address> save(@Valid @RequestBody Address address) {
 
-        return ResponseEntity.ok(repository.save(checkIfHaveLatAndLog(address)));
+        return ResponseEntity.ok(repository.save(checkIfHaveLatAndLng(address)));
     }
 
-    private Address checkIfHaveLatAndLog(Address address) {
+    private Address checkIfHaveLatAndLng(Address address) {
         return address.getLatitude() == null || address.getLongitude() == null ?
                 geoService.getLocalization(address):address;
     }

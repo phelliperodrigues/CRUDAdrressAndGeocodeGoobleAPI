@@ -99,7 +99,7 @@ public class AddressControllerTest {
 
         repository.save(createValidAddress());
 
-        String responseBody = this.mvc.perform(
+        var responseBody = this.mvc.perform(
                 get(uri)
                         .contentType(APPLICATION_JSON_UTF8)
                         .accept(APPLICATION_JSON_UTF8)
@@ -109,7 +109,7 @@ public class AddressControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        List<Address> addresses = objectMapper.readValue(responseBody, new TypeReference<List<Address>>() {});
+        var addresses = objectMapper.readValue(responseBody, new TypeReference<List<Address>>() {});
 
         assertThat(addresses).isNotEmpty();
     }
@@ -117,10 +117,10 @@ public class AddressControllerTest {
     @Test
     @DisplayName("[R] - Testing return from find by Id")
     public void should_return_a_address_from_find_by_id() throws Throwable {
-        Address address = createValidAddress();
+        var address = createValidAddress();
         repository.save(address);
 
-        String responseBody = this.mvc.perform(
+        var responseBody = this.mvc.perform(
                 get(uri + address.getId())
                         .contentType(APPLICATION_JSON_UTF8)
                         .accept(APPLICATION_JSON_UTF8)
@@ -130,10 +130,12 @@ public class AddressControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        Address addressReturn = objectMapper.readValue(responseBody, Address.class);
+        var addressReturn = objectMapper.readValue(responseBody, Address.class);
 
         assertThat(addressReturn).extracting(Address::getId).isEqualTo(address.getId()).isNotNull();
     }
+
+
 
     @Test
     @DisplayName("[R] Testing return from find by Id Invalid")
@@ -174,9 +176,9 @@ public class AddressControllerTest {
     @DisplayName("[C] Testing the create incomplete address and valid longitude and latitude")
     public void when_post_request_to_address_and_invalid_address_then_validation_longitude_and_latitude() throws Throwable {
         repository.deleteAll();
-
+        String jsonRequest = new Gson().toJson(createValidAddress());
         mvc.perform(post(uri)
-                .content(new Gson().toJson(createValidAddress()))
+                .content(jsonRequest)
                 .contentType(APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -186,9 +188,10 @@ public class AddressControllerTest {
 
         Address addressResponse = repository.findAll().stream().findFirst().orElse(null);
 
-        assertThat(addressResponse).extracting(Address::getLatitude).isEqualTo("-23.7042771");
+        assertThat(addressResguitponse).extracting(Address::getLatitude).isEqualTo("-23.7042771");
         assertThat(addressResponse).extracting(Address::getLongitude).isEqualTo("-46.6868483");
     }
+
 
 }
 
