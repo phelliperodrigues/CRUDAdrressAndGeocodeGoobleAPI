@@ -188,7 +188,7 @@ public class AddressControllerTest {
 
         Address addressResponse = repository.findAll().stream().findFirst().orElse(null);
 
-        assertThat(addressResguitponse).extracting(Address::getLatitude).isEqualTo("-23.7042771");
+        assertThat(addressResponse).extracting(Address::getLatitude).isEqualTo("-23.7042771");
         assertThat(addressResponse).extracting(Address::getLongitude).isEqualTo("-46.6868483");
     }
 
