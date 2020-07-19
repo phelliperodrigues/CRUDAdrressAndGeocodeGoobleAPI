@@ -71,6 +71,18 @@ public class AddressControllerTest {
                 .in().country("Brasil")
                 .with().zipcode("04816100");
     }
+
+    private Address createValidAddressForUpdateNumber() {
+        return new Address()
+                .from().streetName("Praca Almirante Pena Boto")
+                .with().number("100")
+                .and().complement("Apt 34 Bl 14")
+                .in().neighbourhood("Jardim Satelite")
+                .in().city("Sao Paulo")
+                .in().state("Sao Paulo")
+                .in().country("Brasil")
+                .with().zipcode("04816100");
+    }
     private Address createInvalidAddress() {
         return new Address()
                 .from().streetName("Praca Almirante Pena Boto")
@@ -216,6 +228,28 @@ public class AddressControllerTest {
                         .accept(APPLICATION_JSON_UTF8)
         )
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("[U] - Testing update with id valid")
+    public void should_update_address_with_id_valid() throws Throwable {
+        var address = createValidAddress();
+        repository.save(address);
+
+        this.mvc.perform(
+                put(uri + address.getId())
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .accept(APPLICATION_JSON_UTF8)
+                        .content(objectMapper.writeValueAsString(createValidAddressForUpdateNumber()))
+        )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.number", Is.is("100")))
+                .andExpect(content()
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andReturn()
+                .getResponse();
+
+
     }
 }
 
