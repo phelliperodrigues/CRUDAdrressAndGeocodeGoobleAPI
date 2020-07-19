@@ -59,8 +59,13 @@ public class AddressController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Address> update(@PathVariable("id") String uuid, @Valid @RequestBody Address address){
-        address.with().id(UUID.fromString(uuid));
-        return ResponseEntity.ok(repository.save(checkIfHaveLatAndLng(address)));
+
+        return repository.findById(UUID.fromString(uuid))
+                .map(a -> {
+                    address.with().id(a.getId());
+                    return ResponseEntity.ok(repository.save(checkIfHaveLatAndLng(address)));
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 
 

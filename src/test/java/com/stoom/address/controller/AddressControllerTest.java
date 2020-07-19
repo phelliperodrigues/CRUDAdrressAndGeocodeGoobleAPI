@@ -94,6 +94,49 @@ public class AddressControllerTest {
     }
 
     @Test
+    @DisplayName("[C] Testing the create valid address")
+    public void when_post_request_to_address_and_valid_address_then_correct_response() throws Throwable {
+
+        mvc.perform(post(uri)
+                .content(fromJSON(createValidAddress()))
+                .contentType(APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    @DisplayName("[C] Testing the create invalid address")
+    public void when_post_request_to_address_and_invalid_address_then_correct_response() throws Throwable {
+        mvc.perform(post(uri)
+                .content(fromJSON(createInvalidAddress()))
+                .contentType(APPLICATION_JSON_UTF8))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.number", Is.is("number is mandatory")))
+                .andExpect(content()
+                        .contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    @DisplayName("[C] Testing the create incomplete address and valid longitude and latitude")
+    public void when_post_request_to_address_and_invalid_address_then_validation_longitude_and_latitude() throws Throwable {
+        repository.deleteAll();
+        String jsonRequest = fromJSON(createValidAddress());
+        mvc.perform(post(uri)
+                .content(jsonRequest)
+                .contentType(APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        Address addressResponse = repository.findAll().stream().findFirst().orElse(null);
+
+        assertThat(addressResponse).extracting(Address::getLatitude).isEqualTo("-23.7042771");
+        assertThat(addressResponse).extracting(Address::getLongitude).isEqualTo("-46.6868483");
+    }
+
+    @Test
     @DisplayName("[R] - Testing whether a route exists to fetch all addresses")
     public void should_return_ok_status_when_find_all_address() throws Throwable {
         this.mvc.perform(
@@ -159,49 +202,47 @@ public class AddressControllerTest {
         )
                 .andExpect(status().isNotFound());
     }
-
     @Test
-    @DisplayName("[C] Testing the create valid address")
-    public void when_post_request_to_address_and_valid_address_then_correct_response() throws Throwable {
+    @DisplayName("[U] - Testing update with id valid")
+    public void should_update_address_with_id_valid() throws Throwable {
+        var address = createValidAddress();
+        repository.save(address);
 
-        mvc.perform(post(uri)
-                .content(objectMapper.writeValueAsString(createValidAddress()))
-                .contentType(APPLICATION_JSON_UTF8))
+        this.mvc.perform(
+                put(uri + address.getId())
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .content(fromJSON(createValidAddressForUpdateNumber()))
+        )
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-    }
-
-    @Test
-    @DisplayName("[C] Testing the create invalid address")
-    public void when_post_request_to_address_and_invalid_address_then_correct_response() throws Throwable {
-        mvc.perform(post(uri)
-                .content(objectMapper.writeValueAsString(createInvalidAddress()))
-                .contentType(APPLICATION_JSON_UTF8))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.number", Is.is("number is mandatory")))
+                .andExpect(jsonPath("$.number", Is.is("100")))
                 .andExpect(content()
-                        .contentType(MediaType.APPLICATION_JSON));
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andReturn()
+                .getResponse();
+
+
     }
 
     @Test
-    @DisplayName("[C] Testing the create incomplete address and valid longitude and latitude")
-    public void when_post_request_to_address_and_invalid_address_then_validation_longitude_and_latitude() throws Throwable {
-        repository.deleteAll();
-        String jsonRequest = new Gson().toJson(createValidAddress());
-        mvc.perform(post(uri)
-                .content(jsonRequest)
-                .contentType(APPLICATION_JSON_UTF8))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
+    @DisplayName("[U] - Testing update with id invalid")
+    public void should_update_address_with_id_invalid() throws Throwable {
+        var address = createValidAddress();
+        repository.save(address);
 
-        Address addressResponse = repository.findAll().stream().findFirst().orElse(null);
+        this.mvc.perform(
+                put(uri + UUID.randomUUID().toString())
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .content(fromJSON(createValidAddressForUpdateNumber()))
+        )
+                .andExpect(status().isNotFound());
 
-        assertThat(addressResponse).extracting(Address::getLatitude).isEqualTo("-23.7042771");
-        assertThat(addressResponse).extracting(Address::getLongitude).isEqualTo("-46.6868483");
+
     }
+
+    private String fromJSON(Address address){
+        return new Gson().toJson(address);
+    }
+
     @Test
     @DisplayName("[D] - Testing resource from deleting Address by Id")
     public void shout_delete_address_by_id() throws Throwable{
@@ -230,26 +271,7 @@ public class AddressControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    @Test
-    @DisplayName("[U] - Testing update with id valid")
-    public void should_update_address_with_id_valid() throws Throwable {
-        var address = createValidAddress();
-        repository.save(address);
 
-        this.mvc.perform(
-                put(uri + address.getId())
-                        .contentType(APPLICATION_JSON_UTF8)
-                        .content(objectMapper.writeValueAsString(createValidAddressForUpdateNumber()))
-        )
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.number", Is.is("100")))
-                .andExpect(content()
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andReturn()
-                .getResponse();
-
-
-    }
 }
 
 
