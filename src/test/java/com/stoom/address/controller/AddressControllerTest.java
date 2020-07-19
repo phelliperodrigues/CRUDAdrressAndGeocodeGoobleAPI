@@ -206,7 +206,17 @@ public class AddressControllerTest {
                 .getResponse()
                 .getContentAsString();
     }
+    @Test
+    @DisplayName("[D] - Testing resource from deleting Address by Invalid Id")
+    public void shout_delete_address_by_invalid_id() throws Throwable{
 
+        this.mvc.perform(
+                delete(uri +UUID.randomUUID().toString())
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .accept(APPLICATION_JSON_UTF8)
+        )
+                .andExpect(status().isNotFound());
+    }
 }
 
 

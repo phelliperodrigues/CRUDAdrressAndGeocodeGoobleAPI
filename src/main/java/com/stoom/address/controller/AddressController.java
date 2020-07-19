@@ -70,7 +70,11 @@ public class AddressController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> destroy(@PathVariable("id") String uuid){
-        repository.deleteById(UUID.fromString(uuid));
-        return ResponseEntity.noContent().build();
+        try {
+            repository.deleteById(UUID.fromString(uuid));
+            return ResponseEntity.noContent().build();
+        } catch (Exception e){
+            return ResponseEntity.notFound().build();
+        }
     }
 }
