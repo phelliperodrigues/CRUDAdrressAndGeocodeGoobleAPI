@@ -239,7 +239,6 @@ public class AddressControllerTest {
         this.mvc.perform(
                 put(uri + address.getId())
                         .contentType(APPLICATION_JSON_UTF8)
-                        .accept(APPLICATION_JSON_UTF8)
                         .content(objectMapper.writeValueAsString(createValidAddressForUpdateNumber()))
         )
                 .andExpect(status().isOk())

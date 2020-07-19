@@ -102,6 +102,10 @@ public class Address  implements Serializable {
         return this;
     }
 
+    public Address id (UUID uuid) {
+        this.id = uuid;
+        return this;
+    }
     public boolean haveGeoLocalization() {
         return this.latitude == null || this.longitude == null;
     }

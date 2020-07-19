@@ -13,10 +13,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+
 import static java.util.stream.Collectors.*;
 
 @RestController
@@ -43,12 +41,28 @@ public class AddressController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-
     @PostMapping
     public ResponseEntity<Address> save(@Valid @RequestBody Address address) {
 
         return ResponseEntity.ok(repository.save(checkIfHaveLatAndLng(address)));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> destroy(@PathVariable("id") String uuid){
+        try {
+            repository.deleteById(UUID.fromString(uuid));
+            return ResponseEntity.noContent().build();
+        } catch (Exception e){
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Address> update(@PathVariable("id") String uuid, @Valid @RequestBody Address address){
+        address.with().id(UUID.fromString(uuid));
+        return ResponseEntity.ok(repository.save(checkIfHaveLatAndLng(address)));
+    }
+
 
     private Address checkIfHaveLatAndLng(Address address) {
         return address.getLatitude() == null || address.getLongitude() == null ?
@@ -66,15 +80,5 @@ public class AddressController {
             errors.put(fieldName, errorMessage);
         });
         return errors;
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> destroy(@PathVariable("id") String uuid){
-        try {
-            repository.deleteById(UUID.fromString(uuid));
-            return ResponseEntity.noContent().build();
-        } catch (Exception e){
-            return ResponseEntity.notFound().build();
-        }
     }
 }
