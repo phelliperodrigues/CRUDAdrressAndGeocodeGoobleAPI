@@ -27,8 +27,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -191,7 +190,22 @@ public class AddressControllerTest {
         assertThat(addressResponse).extracting(Address::getLatitude).isEqualTo("-23.7042771");
         assertThat(addressResponse).extracting(Address::getLongitude).isEqualTo("-46.6868483");
     }
+    @Test
+    @DisplayName("[D] - Testing resource from deleting Address by Id")
+    public void shout_delete_address_by_id() throws Throwable{
+        var address = createValidAddress();
+        repository.save(address);
 
+        this.mvc.perform(
+                delete(uri + address.getId())
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .accept(APPLICATION_JSON_UTF8)
+        )
+                .andExpect(status().isNoContent())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+    }
 
 }
 
